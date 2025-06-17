@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>🎂 คำอวยพรวันเกิด</title>
+  <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #ffe0f5, #ffdded);
+      font-family: 'Itim', cursive;
+      color: #444;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .friend-profile {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      border: 5px solid #fff;
+      box-shadow: 0 0 30px rgba(255, 120, 180, 0.4);
+      z-index: 3;
+      object-fit: cover;
+    }
+
+    .disk-behind {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 320px;
+      height: 320px;
+      background-image: url('vinyl.png');
+      background-size: cover;
+      background-position: center;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      opacity: 0.4;
+      animation: spinDisk 14s linear infinite;
+      box-shadow: 0 0 40px rgba(255, 120, 180, 0.25);
+    }
+
+    .card {
+      background: #fff7fb;
+      border-radius: 25px;
+      padding: 2rem 1.5rem 5rem 1.5rem; /* เพิ่ม padding bottom จาก 3rem เป็น 5rem */
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(255, 105, 180, 0.25);
+      border: 4px dashed #ffa3c4;
+      position: relative;
+      z-index: 2;
+      max-width: 380px;
+      width: 100%;
+      margin-top: 120px;
+      animation: bounceIn 1.5s ease;
+      min-height: 450px; /* เพิ่มความสูงขั้นต่ำ */
+    }
+
+    .card::after {
+      content: "✨💝🎂";
+      font-size: 1.5rem;
+      position: absolute;
+      top: -25px;
+      right: -15px;
+      color: #f78fb3;
+      transform: rotate(-15deg);
+    }
+
+    .card h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #e84393;
+      text-shadow: 1px 1px 2px #fff;
+    }
+
+    .friend-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #ffa3c4;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+      animation: rotateImage 12s infinite linear;
+    }
+
+    .card p {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #555;
+      margin-bottom: 1.5rem; /* เพิ่ม margin bottom */
+    }
+
+    .gift-button {
+      position: relative;
+      width: 70px;
+      height: 70px;
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      font-size: 2rem;
+      color: #ff5c8d;
+      cursor: pointer;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 6rem auto 0 auto; /* เพิ่ม margin-top จาก 4rem เป็น 6rem */
+      transition: transform 0.3s ease;
+    }
+
+    .gift-button:hover {
+      transform: scale(1.1);
+      background: #ff66a3;
+    }
+
+    /* การตกแต่งรอบพื้นที่กล่องของขวัญ */
+    .gift-area-decoration {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 150px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .floating-emoji {
+      position: absolute;
+      font-size: 1.5rem;
+      opacity: 0.7;
+      animation: gentleFloat 4s ease-in-out infinite;
+    }
+
+    .floating-emoji:nth-child(1) {
+      bottom: 120px;
+      left: 20px;
+      animation-delay: 0s;
+    }
+
+    .floating-emoji:nth-child(2) {
+      bottom: 100px;
+      right: 20px;
+      animation-delay: 1s;
+    }
+
+    .floating-emoji:nth-child(3) {
+      bottom: 80px;
+      left: 40px;
+      animation-delay: 2s;
+    }
+
+    .floating-emoji:nth-child(4) {
+      bottom: 90px;
+      right: 40px;
+      animation-delay: 0.5s;
+    }
+
+    .floating-emoji:nth-child(5) {
+      bottom: 60px;
+      left: 60px;
+      animation-delay: 1.5s;
+    }
+
+    .floating-emoji:nth-child(6) {
+      bottom: 70px;
+      right: 60px;
+      animation-delay: 2.5s;
+    }
+
+    .corner-stars {
+      position: absolute;
+      bottom: 20px;
+      font-size: 1.2rem;
+      color: #ffa3c4;
+      opacity: 0.8;
+    }
+
+    .corner-stars.left {
+      left: 15px;
+      animation: twinkle 2s ease-in-out infinite;
+    }
+
+    .corner-stars.right {
+      right: 15px;
+      animation: twinkle 2s ease-in-out infinite 1s;
+    }
+
+    @keyframes gentleFloat {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-8px) rotate(5deg);
+      }
+    }
+
+    @keyframes twinkle {
+      0%, 100% {
+        opacity: 0.4;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+    }
+
+    .gift-images {
+      position: absolute;
+      top: -80px; /* เปลี่ยนจาก bottom เป็น top เพื่อให้อยู่ด้านบน */
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .gift-images.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .gift-images img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      box-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
+      opacity: 0;
+      transform: translateY(-20px) scale(0.8); /* เปลี่ยนจาก translateY(20px) เป็น translateY(-20px) */
+      transition: all 0.4s ease;
+    }
+
+    .gift-images img.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .floating-hearts::before {
+      content: "💓 💞 💗 💕 💖";
+      position: fixed;
+      font-size: 1.8rem;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: floatUp 6s infinite linear;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% {
+        top: 100%;
+        opacity: 0;
+      }
+
+      30% {
+        opacity: 1;
+      }
+
+      100% {
+        top: -10%;
+        opacity: 0;
+      }
+    }
+
+    @keyframes bounceIn {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+
+      50% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes rotateImage {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes bounceUp {
+      0% {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      50% {
+        transform: translateY(-10px);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes spinDisk {
+      0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+
+      100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    canvas#fireworks {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* 🎈 Balloons */
+    .balloon {
+      position: fixed;
+      bottom: -100px;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      opacity: 0.9;
+      animation-timing-function: ease-out;
+      pointer-events: none;
+      z-index: 5;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .balloon::after {
+      content: '';
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      width: 2px;
+      height: 15px;
+      background: #333;
+      transform: translateX(-50%);
+      border-radius: 1px;
+      opacity: 0.3;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-120vh);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ลบ autoplay ออกจาก audio เพื่อให้ควบคุมการเล่นด้วย JS -->
+  <audio id="bgMusic" loop>
+    <source src="happy-birthday.mp3" type="audio/mpeg" />
+  </audio>
+
+  <canvas id="fireworks"></canvas>
+  <div class="floating-hearts"></div>
+
+  <img src="bum.png" alt="เพื่อนสนิท" class="friend-profile" />
+  <div class="disk-behind"></div>
+
+  <div class="card">
+    <h2>Happy Birthday na kub</h2>
+    <img src="record.png" alt="แผ่นเสียง" class="friend-img" />
+    <p>
+      ขอให้วันนี้เป็นวันพิเศษสำหรับแก<br />
+      เต็มไปด้วยรอยยิ้ม และความรักมากมาย 💕<br />
+      สมหวังทุกสิ่งที่ตั้งใจฮะ และมีความสุขในทุก ๆ วันนะ!✨🫶
+    </p>
+    
+    <!-- การตกแต่งรอบพื้นที่กล่องของขวัญ -->
+    <div class="gift-area-decoration">
+      <div class="floating-emoji">🌸</div>
+      <div class="floating-emoji">🌺</div>
+      <div class="floating-emoji">🌻</div>
+      <div class="floating-emoji">🌷</div>
+      <div class="floating-emoji">🦋</div>
+      <div class="floating-emoji">🎀</div>
+      <div class="corner-stars left">⭐✨</div>
+      <div class="corner-stars right">✨⭐</div>
+    </div>
+    
+    <button class="gift-button" id="giftBtn">🎁
+      
+      <div class="gift-images" id="giftImages">
+        <img src="gift1.png" alt="ของขวัญ 1" />
+        <img src="gift2.png" alt="ของขวัญ 2" />
+        <img src="gift3.png" alt="ของขวัญ 3" />
+      </div>
+    </button>
+  </div>
+  
+
+
+  <script>
+    // เพลงเปิดอัตโนมัติถ้าเบราว์เซอร์อนุญาต
+    window.addEventListener('load', () => {
+      const music = document.getElementById('bgMusic');
+      music.play().catch((error) => {
+        // เล่นอัตโนมัติไม่ได้ อาจต้องรอ interaction
+        console.log('Autoplay failed:', error);
+      });
+    });
+
+    // ถ้า autoplay ล้มเหลว ให้คลิกที่หน้าเล่นเสียงแทน
+    window.addEventListener('click', () => {
+      const music = document.getElementById('bgMusic');
+      if (music.paused) {
+        music.play();
+      }
+    }, { once: true });
+
+    // ฟังค์ชันแคนวาสพลุ
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const fireworks = [];
+
+    class Particle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.radius = Math.random() * 2 + 1;
+        this.color = color;
+        this.vx = (Math.random() - 0.5) * 4;
+        this.vy = (Math.random() - 0.5) * 4;
+        this.alpha = 1;
+        this.life = 100;
+      }
+      draw() {
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life--;
+        this.alpha -= 0.01;
+      }
+    }
+
+    function launchFirework() {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height * 0.5;
+      const colors = ['#ff4ecb', '#ffe600', '#4efeff', '#a774ff', '#ff9a00'];
+      for (let i = 0; i < 30; i++) {
+        fireworks.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)]));
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      fireworks.forEach((p, i) => {
+        p.update();
+        p.draw();
+        if (p.life <= 0 || p.alpha <= 0) {
+          fireworks.splice(i, 1);
+        }
+      });
+      requestAnimationFrame(animate);
+    }
+
+    setInterval(launchFirework, 1500);
+    animate();
+
+    // ปุ่มของขวัญกดแล้วโชว์ของขวัญแบบสไลด์
+    const giftBtn = document.getElementById('giftBtn');
+    const giftImages = document.getElementById('giftImages');
+    const giftImgElements = giftImages.querySelectorAll('img');
+    
+    giftBtn.addEventListener('click', () => {
+      // รีเซ็ตสถานะ
+      giftImages.classList.remove('active');
+      giftImgElements.forEach(img => img.classList.remove('show'));
+      
+      // เริ่มแสดงของขวัญ
+      setTimeout(() => {
+        giftImages.classList.add('active');
+        
+        // แสดงของขวัญทีละชิ้นแบบสไลด์
+        giftImgElements.forEach((img, index) => {
+          setTimeout(() => {
+            img.classList.add('show');
+          }, index * 600); // หน่วงเวลา 600ms ระหว่างแต่ละชิ้น
+        });
+        
+        // ซ่อนทั้งหมดหลังจาก 4 วินาที
+        setTimeout(() => {
+          giftImages.classList.remove('active');
+          giftImgElements.forEach(img => img.classList.remove('show'));
+        }, 4000);
+        
+      }, 100);
+    });
+
+    // 🎈 ลูกโป่งลอยขึ้น
+    function createBalloon() {
+      const balloon = document.createElement('div');
+      balloon.classList.add('balloon');
+
+      const colors = ['#ff5c8d', '#ff8acb', '#ff3d7f', '#ffa6c9', '#ff477e'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      const size = Math.random() * 40 + 30;
+      balloon.style.width = size + 'px';
+      balloon.style.height = size * 1.2 + 'px';
+      balloon.style.backgroundColor = color;
+
+      const left = Math.random() * 100;
+      balloon.style.left = left + 'vw';
+
+      const duration = Math.random() * 5000 + 6000;
+      balloon.style.animation = `floatUp ${duration}ms forwards`;
+
+      document.body.appendChild(balloon);
+
+      setTimeout(() => {
+        balloon.remove();
+      }, duration);
+    }
+
+    setInterval(createBalloon, 700);
+  </script>
+</body>
+
+</html>
